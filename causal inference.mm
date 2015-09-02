@@ -1,13 +1,31 @@
 <map version="1.0.1">
 <!-- To view this file, download free mind mapping software FreeMind from http://freemind.sourceforge.net -->
 <node CREATED="1440928449953" ID="ID_1668013466" MODIFIED="1440928457964" TEXT="Causation">
-<node CREATED="1440928457969" ID="ID_1430374495" MODIFIED="1440971241451" POSITION="right" TEXT="Problem statement">
-<node CREATED="1440928461394" ID="ID_7654874" MODIFIED="1440928503162" TEXT="Extract and mechanistically characterize the regulatory relationships between gene products in the cell"/>
-<node CREATED="1440966986647" ID="ID_1919829422" MODIFIED="1440967066627" TEXT="Limit scope to situations where we do not know whether a regulatory relationship exists and we wish to infer its existence from data (as opposed to knowing it exists and seeking only to characterize its mechanism)."/>
+<node CREATED="1441207226603" ID="ID_998821958" MODIFIED="1441207274623" POSITION="right" TEXT="VIgnette Argument:  Large-scale experiments are more prone to hiding the true signal and generating spurious associations; therefore right perturbations and prior knowledge are key to infer causality."/>
+<node CREATED="1441207280325" ID="ID_848401861" MODIFIED="1441207378020" POSITION="right" TEXT="How experimentalists infer causality from experiments.">
+<node CREATED="1440928461394" ID="ID_7654874" MODIFIED="1441207454956" TEXT="In the systems biology context, inferring causality means extracting regulatory relationships between gene products in the cell from experimental data."/>
+<node CREATED="1441207546724" ID="ID_194738226" MODIFIED="1441208200162" TEXT="The gold standard approach for inferring causal relationships between simulateously measured is features in an experiment is a two step process; first determine what features are conditionally dependent, then determine the causal relationships between conditionally dependent features.">
+<node CREATED="1441209563281" ID="ID_287472411" MODIFIED="1441209614452" TEXT="Conditional dependence">
+<node CREATED="1441208271250" ID="ID_1439679587" MODIFIED="1441209226592" TEXT="When we simultaneously measure several components within a cell, the measurements will be strongly correlated."/>
+<node CREATED="1440928688010" ID="ID_477107729" MODIFIED="1441212445234" TEXT="However, many correlated pairs will be conditionally independent, meaning the correlation and other statistical associations between two components disappear when we know what other components in the system are doing.">
+<node CREATED="1441209545593" ID="ID_1472950314" MODIFIED="1441212917878" TEXT="Karen&apos;s MAPK example with causal semantics">
+<node CREATED="1441212930769" ID="ID_34429863" MODIFIED="1441212950725" TEXT="Mek -&gt; Erk means  increasing the concentration of phosphorylated Mek will cause an increase in the concentration of phosphorylation of Erk by means of Mek&apos;s phosphorylation of Erk. "/>
+<node CREATED="1441212951825" ID="ID_153591838" MODIFIED="1441212954908" TEXT=" Introduce the on/off shorthand and Mek -&gt; Erk means when Mek is &quot;on&quot;"/>
+</node>
+<node CREATED="1441209555623" ID="ID_873682097" MODIFIED="1441209561160" TEXT="Karen&apos;s Simpsons example"/>
+</node>
+<node CREATED="1441209679233" ID="ID_1171015991" MODIFIED="1441210211198" TEXT="Methods for finding causal relationships in algorithmically determine conditional independencies in the hairball of correlations.  The result set of conditional dependencies far sparser than the original set of correlations."/>
+</node>
+<node CREATED="1441209633292" ID="ID_759970060" MODIFIED="1441209668670" TEXT="Determining causality">
+<node CREATED="1441210308161" ID="ID_1150453519" MODIFIED="1441212202950" TEXT="Assuming we measure everything, if two components are conditionally dependent, there are 3 possibilities.  A causes B, B causes A, or A and B both cause C.">
+<node CREATED="1441212131261" ID="ID_541328203" MODIFIED="1441212522272" TEXT="The MAPK example illustrates the first two cases.  Given we find Mek and Erk are conditionally dependent,  Mek -&gt; Erk , or Erk -&gt; Mek.  "/>
+<node CREATED="1441212202953" ID="ID_345655167" MODIFIED="1441212851730" TEXT="The third case could be a case where either kinase A or kinase B independently phosphorylate C.  In this case, if we know C is on, then A and B are conditional dependent because one of them must of activated C, so knowing A is off tells us that B must be on."/>
+</node>
+</node>
+</node>
 </node>
 <node CREATED="1440928555981" ID="ID_445030991" MODIFIED="1440971243153" POSITION="right" TEXT="Key Theoretical Concepts">
 <node CREATED="1440928646489" ID="ID_1539740218" MODIFIED="1440957071675" TEXT="When speaking of correlation, we often mean statistical association.  Statistical association can be nonlinear and describe relationships between several objects.  Correlation is a type of statistical association that is pairwise and strictly linear."/>
-<node CREATED="1440928688010" ID="ID_477107729" MODIFIED="1440957142482" TEXT="Conditional independence means statistical association between two objects disappears when conditioning on a third object."/>
 <node CREATED="1440957156015" ID="ID_584210519" MODIFIED="1440957207926" TEXT="Causal modeling starts with conditional dependence, meaning that two objects remain statistically associated even after conditioning on all other objects in the system."/>
 <node CREATED="1440940267006" ID="ID_181049441" MODIFIED="1440958218492" TEXT="If two objects are conditionally dependent, then either one causes the other, or there is a third unknown variable that jointly affects them both.  "/>
 </node>
