@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<title>Causation</title>
+<title> Large-scale experiments are more prone to hiding the true signal and generating spurious associations; therefore right perturbations and prior knowledge are key to infer causality.</title>
 <style type="text/css">
     li { list-style: none;  margin: 0; }
     p { margin: 0; }
@@ -17,114 +17,72 @@
 <!-- ^ Position is not set to relative / absolute here because of Mozilla -->
 </head>
 <body>
-<p>Causation
-<ul><li>Problem statement
-<ul><li><p>Extract and mechanistically characterize the regulatory relationships between gene products in the cell
-<p>Limit scope to situations where we do not know whether a regulatory relationship exists and we wish to infer its existence from data (as opposed to knowing it exists and seeking only to characterize its mechanism).
+<p> Large-scale experiments are more prone to hiding the true signal and generating spurious associations; therefore right perturbations and prior knowledge are key to infer causality.
+<ul><li><p>How to infer causality from experiments.
+<ul><li><p>By incorporating randomization into the design of a typical experiment, we can evaluate a possible causal relationship between a treatment (cause) and phenotype (effect). &nbsp;However, in systems biology, inferring causality means inferring from experimental measurements the set of regulatory interactions that connect the treatment to the phenotype.
+<p>The gold standard methods for inferring causal relationships between simulateously measured features in an experiment is a two step process; first determine what features are conditionally dependent, then determine the causal relationships between conditionally dependent features.
+<ul><li>Conditional dependence
+<ul><li><p>When we simultaneously measure several components within a cell, the measurements will be strongly correlated.
+<p>However, many correlated pairs will be conditionally independent, meaning the correlation and other statistical associations between two components disappear when we know what other components in the system are doing.
+<ul><li>Karen's MAPK example with introduction of causal semantics
+<ul><li><p>Mek -&gt; Erk means &nbsp;increasing the concentration of phosphorylated Mek will cause an increase in the concentration of phosphorylation of Erk by means of Mek's phosphorylation of Erk. 
+<p>Iintuitive on/off shorhand: Mek -&gt; Erk means Mek being &nbsp;"on" will 'turn on' Erk
 </li>
 </ul>
 </li>
-<li>Key Theoretical Concepts
-<ul><li><p>When speaking of correlation, we often mean statistical association. &nbsp;Statistical association can be nonlinear and describe relationships between several objects. &nbsp;Correlation is a type of statistical association that is pairwise and strictly linear.
-<p>Conditional independence means statistical association between two objects disappears when conditioning on a third object.
-<p>Causal modeling starts with conditional dependence, meaning that two objects remain statistically associated even after conditioning on all other objects in the system.
-<p>If two objects are conditionally dependent, then either one causes the other, or there is a third unknown variable that jointly affects them both. &nbsp;
+<li>Karen's Simpsons example
+
+</li>
+
+</ul><p>Methods for finding causal relationships in algorithmically determine conditional independencies in the hairball of correlations. &nbsp;The result set of conditional dependencies far sparser than the original set of correlations.
 </li>
 </ul>
 </li>
-<li>Using Bayesian networks to model causality in systems biology
-<ul><li><p>Definition
-<ul><li><p>A Bayesian is a probabilistic graphical model (a type of statistical model) that represents a set of random variables and their conditional dependencies via a directed acyclic graph (DAG).
-<p>Each variable in the model is a node in the structure. &nbsp;Encoded in each node is the conditional probability distribution (CPD) of the node variable given its parent nodes.
-<p>A causal Bayesian network (or simply causal network) is a Bayesian network with an explicit requirement that the directed edges represent causal influence.
-<p>In the context of systems biology, we use the causal model formalism to represent the regulatory relationships between genes and gene products within a cell. &nbsp;Tracing the edges in a causal biological model shows how signal flows through the system.
-<p>We are interested in inferring causal networks from measurements. &nbsp;In the context of mass spectometry, this is typically the abundance of phospho-peptides in large scale bulk experiments or single cell CyTOF measurements.
+<li>Determining causality
+<ul><li><p>Assuming we measure everything, if two components are conditionally dependent, there are 3 possibilities. &nbsp;A causes B, B causes A, or A and B both cause C.
+<ul><li><p>The MAPK example illustrates the first two cases. &nbsp;Given we find Mek and Erk are conditionally dependent, &nbsp;Mek -&gt; Erk , or Erk -&gt; Mek. &nbsp;
+<p>The third case could be a case where either kinase A or kinase B independently phosphorylate C. &nbsp;In this case, if we know C is on, then A and B are conditional dependent because one of them must of activated C, so knowing A is off tells us that B must be on.
 </li>
-</ul><p>Causal Network Structure inference from data involves determining set of conditional dependence relationships and orienting causal direction of edges
-<ul><li>Inferring conditional dependence
-<ul><li><p>Stimuli
-<ul><li><p>Activates the pathways that result in the response/phenotype. &nbsp;The goal of causal network inference is to reverse-engineer (infer) the structure of these pathways from experimental measurements. &nbsp;&nbsp;
-<p>Causal network inference methods use the variation introduced by these stimuli to identify conditional dependence relationships
-<p>Inclusion of no-stimuli controls is needed to separate phenotype-related relationships from those related to general background operations
-</li>
-</ul><p>Other things being equal, the larger the sample size, the easier to distill a small set of conditional dependence relationships from the mass of spurious correlations.
-</li>
-</ul>
-</li>
-<li>Orienting edges
-<ul><li><p>Treatments called perturbations elucidate causal influence between two conditionally dependent objects
-<ul><li><p>Perturbations fix the value of one object, so we can observe whether to other responses. &nbsp;In systems biology, this means changing the abundance of a specific object. &nbsp;An example is genetic knockouts.
+</ul><p>Treatments called perturbations elucidate causal influence between two conditionally dependent objects
+<ul><li><p>Perturbations fix the value of one object, so we can observe whether the other responds. &nbsp;In systems biology, this means changing the abundance of a specific object. &nbsp;An example is genetic knockouts.
 <p>Perturbations can also block the ability of an object to influence others. &nbsp;An example is small molecule inhibitors which can stop a kinase from phosphorylating its target without affecting the abundance of the kinase. 
 </li>
-</ul><p>Once an edge is oriented, it can orient neighboring edges. &nbsp;The full set of causal directions can be discovered without a perturbation on each object in the system (though selecting an optimal set of perturbations remains an open question)
+</ul><p>Note that we can never be sure we measure everything, so we treat an inferred causal relationship as a hypothesis that requires validation in a follow up experiment.
 </li>
 </ul>
 </li>
 
-</ul><p>Hypothesis orientation
-<ul><li><p>Conditional dependence relationships only reveal causal relationships if there are no hidden variables, in other words all the relevant components of the system must be measured in the data. &nbsp;Practically, we are never certain we measure all the relevant components, and indeed there are often technical barriers to doing so.
-<p>Therefore, it is best to view causal network inference as a causal hypothesis generator; each edge in the inferred causal network hypotheses of a causal relationship. &nbsp;Many of these will reflect true relationships, and some will be false positives.
-<p>Through techniques such as model averaging, the strength of a 'causal hypothesis edge' can be evaluated based on how frequently it appeared in structure search runs that each use resampled data.
-<p>The inferred causal net can quantify evidence for hypotheses concerning the effects of treatments on the system.
-<ul><li><p>After causal network structure is inferred from data, the parameters of the CPDs are estimated from data. &nbsp;
-<p> After this step, the inferred network can be used for causal inference, meaning it can quantify the strength of causal influence of a stimuli or perturbation on the system with a probability.
-<p> &nbsp;For example, if the experiment contained a perturbation on protein A, then the causal network can generate an estimate of the probability of any event that resulted from perturbing A. &nbsp;This means you can collect evidence for a priori causal hypotheses of how treatments will affect the system.
+</ul><p>We use these gold standard methods construct a causal Bayesian network.
+<ul><li><p>A Bayesian network is a probabilistic graphical model (a type of statistical model) that represents a set of random variables and their conditional dependencies via a directed acyclic graph (DAG).
+<p>A causal Bayesian network (or simply causal network) is a Bayesian network where the direction of the edges represent causal influence.
+<p>In the context of systems biology, we use the causal model formalism to represent the regulatory relationships between genes and gene products within a cell. &nbsp;Tracing the edges in a causal biological model shows how signal flows through the system.
 </li>
 </ul></li>
-</ul><p>Causal networks stand in contrast with other graph based models of causality in systems biology.
-<ul><li>Pathway databases
-<ul><li><p>Examples include Ingenuity Pathway Analysis, Thomson Reuters's Metacore, Sylventa's 'knowledge assembly networks', signaling pathways from Cells Signaling Technologies and KEGG
-<p>Assembled by manual curation and/or applying text mining to biomedical literature.
-<p>Unlike causal networks, cannot be used to quantify hypotheses given data.
-<p>Pathway collections can include cycles, while causal networks cannot.
-<p>Can be used as a source of prior knowledge in building causal network structure. &nbsp;These collections of pathways can include varying contexts, while the parameterization of a conditional probability distribution in a causal network is specific to a biological context (eg the context of the experiment if the parameters are estimated from data).
+</ul><p>Large-scale experiments have higher degree of spurious correlation. &nbsp;This makes the task of distilling conditional dependence relationships from the space of correlations more difficult
+<ul><li><p>Variation of Olga's spurious correlations simulation. &nbsp;In one instance sim from an MVN with p orthogonal dimensions. &nbsp;Search for conditional dependencies using BIC penalty. &nbsp;Plot the histogram of max correlation between features, and the histogram of the total number of false conditional dependence relationships detected. &nbsp;Increase p by an order of magnitude and repeat. &nbsp;Overlay second 2 histograms on the first
+<p>High correlatipn encourages false assumptions of causality -- Olga's figures
+</li>
+</ul><p>There are two approaches to addressing this issue; incorporating prior biological knowledge and adding perturbations to the experiment.
+<ul><li>Incorporating prior knowledge: demonstrate on real or sim measurements on a signaling pathway
+<ul><li><p>Start the search for conditional dependencies with a starting set of conditional dependencies already &nbsp;in KEGG
+<p>Show the performance of additional conditional dependence and causal relationships is improved.
+<p>Ideally show on a phospho signaling dataet
+<p>Alternatively on simulated data.
 </li>
 </ul>
 </li>
-<li>Biochemical models
-<ul><li><p>Examples include SBML formatted languages stored in European Bioinformatics Institute BioModels database, or rate-of-change models such as ODE's and SDE's.
-<p>Causal networks explicitly model information flow. Biochemical models go into deeper detail by modeling the chemical mechanism, information flow is implicit and is revealed only through analysis, such as with flux analysis.
-<p>Given a biochemical model we can determine a causal network, but the details of the chemistry, such as rate laws or control mechanisms like dephosphorylation of active kinases are typically lost in the CPD of the causal network.
+<li>Incorporating perturbations: &nbsp;demonstrate on sim measurements of a gene regulatory network
+<ul><li><p>Start with high number of features, no perturbations. &nbsp;Do causal structure inference, evaluate performance of structure inference against ground truth. 
+<p>Add in a set of perturbations, repeat
+<p>Repat, show each time that perforance improved
 </li>
 </ul>
+</li>
+<li>Combine both approaches
+
 </li>
 
-</ul></li>
-</ul>
-</li>
-<li>Best practices for inference of biological regulatory networks
-<ul><li><p>Since, we treat edges as causal hypotheses, we validate hypotheses with validation experiments
-<p>Causal network structure inference relies on algorithms that determine conditional dependence
-<ul><li><p>Penalized likelihood, or independence tests, or other heuristics
-<p>search space super exponential in number of nodes. &nbsp;The best practice is greedy search algorithms and model averaging.
-</li>
-</ul><p>Stimuli and interventions can be model explicitly as nodes or in the likelihood function
-<p>Incorporation of prior knowledge
-<p>Single cell and CyTOF
-<ul><li><p>Single cell proteomics using CyTOF has emerged as the dominant tool for causal structure inference because, unlike bulk data, it contains numerous cell level replicates. &nbsp;This cell-to-cell variability is lost in bulk data.
-<p>Single cell proteomics also enables subsetting cells into homogenous subtypes by tagging analytes that differentiate cells. &nbsp;Once the measurements are attained, we subset the datasets using these differentiation markers (a process called 'gating'). &nbsp;Since different subtypes have different signaling mechanisms (eg. naive and mature T cells) we y apply causal network structure inference to each subtype separately.
-<p>The workflow for causal network inference of cell signaling relationships;
-<ul><li><p>Determine the set of signaling stimuli 
-<p>Plan gating approach and prepare antibodies for markers used for gating.
-<p>Select signaling proteins that are part of the signaling response and can be targeted with reliable antibodies.
-<p>Select a set of perturbations (typically inhibitors) of signaling proteins in the pathway
-<p>Conduct the experiment and collect measurements
-<p>Gate the data into subtype subsets
-<p>For subtype datasets of interest, apply causal network inference algorithms
-</li>
-</ul><p>Challenges to working with CyTOF include limited throughput (currently ~50 channels available), which further exacerbates the hidden variables problem, quality and specificity of antibodies, and entanglement (when a the abundance of an analyte changes from the time it exerts causal influence and the time it is measured).
-</li>
-</ul><p>Prior biological knowledge, such as information on possible presence or orientation of an edge, can be incorporated in the structure inference. &nbsp;This can reduce the need for perturbations.
-</li>
-</ul>
-</li>
-<li>Computational challenges and approaches
-<ul><li><p>Algorithm performance has dramatic slowdown with number of nodes
-<p>Large scale structure inference becomes much easier when biological context predetermines a network ordering. &nbsp;An example a "2 layer" network with transcription factors in the first layer and gene targets in the second layer. &nbsp;The direction of any edge is from the first to the second layer, then structure inference reduces to the problem of regressing each node in the second layer on each node in the first, ideally with an L1 penalty to impose sparsity.
-</li>
-</ul>
-</li>
-<li>Open problems in experimental design and statistical modeling
+</ul><p>Open problems in experimental design and statistical modeling
 <ul><li><p>Proposed workflow: Large scale -&gt; CyTOF -&gt; Validation scale. &nbsp;
 <ul><li><p>We can possibly use large scale data to determine what to measure in the CyTOF
 <p>It is possible we could use large scale date to infer conditional dependences, and use that, along with prior knowledge to design a minimal/optimal set of perturbations for CyTOF step
@@ -132,8 +90,6 @@
 </ul><p>What is the ideal perturbation type; &nbsp;knockouts, activations, inhibitions
 <p>In CyTOF, having multiple cell level replicates is not the same as having biological replications. &nbsp;We need an experimental design that enables causal inference with cell level replicates, nested in biological replicates.
 </li>
-</ul>
-</li>
-
+</ul></li>
 </ul></body>
 </html>
