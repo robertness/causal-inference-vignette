@@ -1,0 +1,79 @@
+---
+title: "Distilling Causality from Correlation in Large-scale Omics Datasets"
+author: "Robert Ness"
+date: "September 3, 2015"
+output: html_document
+---
+
+Our goal in molecular cell biology is causal inference -- meaning uncovering the regulatory relationships between components of the cell that determine phenotype and disease states.  Generally observing statistical association between such component does not demonstrate causality.  The exception is in the context of a sound experimental design, where we can safely use statistical association as evidence for the presence of a causal relation.  
+
+High-throughput omics technologies enable us to conduct large-scale experiments, where we simultaneously measure multiple cellular components in a sample, and in many cases acquire a large amount of data for each component.  However, despite generating much more data, these large-scale experiments make causal inference much more difficult.  Large-scale experiments are more prone to hiding the true signal and generating spurious associations, leading to increased false positive conclusions that causal relationships are present.  We can address this problem by improving our experimental design.
+
+## How we infer causality from experiments
+
+The signaling proteins Mek and Erk have a cause-and-effect relationship; Mek has a causal impact on Erk. The causal mechanism is phosphorylation, Mek phosphorylates Erk.  
+
+Assuming this causal relation were not known, the question of whether Mek has a causal effect on Erk is evaluated with a designed experiment, where Mek is the treatment and Erk is the response.  Parts of the experimental design include intervention and randomization.  The intervention targets the potential cause, Mek, and fixes it at different levels, for example 'high activity' and 'baseline activity'.  Randomization refers to random assignment of samples or subjects to each level, helping to alleviate bias introduced by unseen factors.  The experiment generates measurements that will show a strong statistical association between Mek and Erk.  Intervention and randomization enable us to interpret that statistical association as evidence for Mek's causal influence on Erk.
+
+With omics technologies, instead of measuring one response, we simultaneous measure many.  Instead of one statistical association to evaluate, the measurements contain many pairwise associations between each measured features.  As with the simple one-response experimental design, we seek to use these associations to evaluate the presence of causal relations.  The challenge with large datasets is that many of these associations will be spurious.  The more spurious associations, the more likely we are to incorrectly conclude a causal relation exists based on those associations.  
+
+We can remedy this problem in two ways; introducing more interventions, and introducing more prior biological knowledge.    
+
+## How spurious statistical associations increase with the number of features measured
+
+The following simulation illustrates how, as the number of things we measure increases, the number of spurious associations increase.  In each instance of the simulation, we simulate Gaussian measurements for 10 features and 100 features, and each set of feature measurements is completely independent of all others.  Using Pearson correlation to quantify association, since all the features are independent, any correlation we find between a pair of features is completely spurious.  We record the maximum correlation between the 10 feature set and the 100 feature set. We repeat this 500 times.
+
+```{r, echo=FALSE, eval=FALSE}
+set_20 <- rep(0, 500)
+set_500 <- rep(0, 500)
+for(i in 1:500){
+  x <- matrix(rnorm(100 * 20), ncol = 20)
+  cor_x <- cor(x)
+  diag(cor_x) <- 0
+  set_20[i] <- max(cor_x)
+  y <- matrix(rnorm(100 * 500), ncol = 500)
+  cor_y <- cor(y)
+  diag(cor_y) <- 0
+  set_500[i] <- max(cor_y)
+}
+hist(set_500, col = rgb(0.1,0.1,0.1,0.5), xlab = NULL, xlim = c(min(set_20) , max(set_500) + .1 ), 
+     main = "Highest Spurious Correlation")
+hist(set_20, col = rgb(0.8,0.8,0.8,0.5), add = TRUE)
+legend("topr", legend=c("20 features", "500 features"), cex = c(.5),  lwd=c(4,4), col=c(rgb(0.8,0.8,0.8,0.5), rgb(0.1,0.1,0.1,0.5)))
+```
+
+<figure>
+  <img src="http://i.imgur.com/CSuQdePl.png" alt="spurious1">
+  <figcaption>Fig1. Increasing the number of measured features from 20 to 100 makes it much more likely you will find correlations that are high but spurious. </figcaption>
+</figure>
+
+Another way of saying two objects have a statistical association is to say they are not statistically independent.  However, they can still be conditionally independent, meaning the association disappears conditional on knowing what all the other components in the system are doing.  A good example is genetics. President Barak Obama and his father Obama Sr.'s genetic profile both have a strong association with that of his daughter Malia Obama, but if you already know Barak Obama's profile, knowing Obama Sr.'s profile will give you no additional information about Malia's profile -- Malia's genetic profile is conditionally independent of Obama Sr.'s profile, given you know the Barak Obama's profile. Figure 2 continues with the MAPK example;
+
+<figure>
+  <img src="http://i.imgur.com/Ft2exsrl.png" alt="Mapk" width="304" height="228">
+  <figcaption>Fig2. In the MAPK signaling pathway, Raf regulates Mek, which regulates Erk.
+  Top; the lines represent correlation - the activity of the kinases on this pathway are all correlation. Bottom: the lines represent conditional dependence, there is no conditional dependence edge from Raf to Erk because given you know Mek, knowing Raf tells you nothing about Erk. They are conditionally independent.</figcaption>
+</figure>
+
+Though approaches vary, state-of-the-art algorithms for determining causal relationships between several simultaneously measured features all attempt to reduce the set of associations by searching for cases of conditional independence, resulting in a far sparser set of conditional dependence relationships.  However, large-scale experiments make this search task more difficult.  To illustrate, we repeat the previous simulation, and instead of finding the max Pearson correlation in each instance, we apply a search algorithm that iteratively performs conditional independence tests, returning a sparse set of conditional dependence relationships.
+
+```{r, echo=FALSE, eval = FALSE}
+library(bnlearn)
+set_20 <- rep(0, 10)
+set_500 <- rep(0, 10)
+for(i in 1:length(set_10)){
+  print(i)
+  x <- as.data.frame(matrix(rnorm(500 * 20), ncol = 20))
+  set_10[i] <- narcs(gs(x, undirected = TRUE))
+  y <- as.data.frame(matrix(rnorm(500 * 500), ncol = 500))
+  set_100[i] <- narcs(gs(y, undirected = TRUE))
+}
+hist(set_500, col = rgb(0.1,0.1,0.1,0.5), xlab = NULL,  xlim = c(min(set_20), max(set_100)), 
+     main = "Counts of Conditional Dependence Relationships")
+hist(set_20, col = rgb(0.8,0.8,0.8,0.5), add = TRUE)
+legend("top", legend=c("20 features", "500 features"), cex = c(.5),  lwd=c(4,4), col=c(rgb(0.8,0.8,0.8,0.5), rgb(0.1,0.1,0.1,0.5)))
+```
+
+Simulation running, image placeholder.
+
+## Use of prior knowledge and interventions
