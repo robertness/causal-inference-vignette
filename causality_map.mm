@@ -13,6 +13,7 @@
 <node CREATED="1441301463197" ID="ID_1482346782" MODIFIED="1441301488702" TEXT="intervention means fixing a cause to a certain level/value"/>
 <node CREATED="1441301489177" ID="ID_1139606109" MODIFIED="1441301524461" TEXT="randomization is random assignment to different intervention levels."/>
 </node>
+<node CREATED="1441406329186" ID="ID_1909334445" MODIFIED="1441406416622" TEXT="A full set of interventions is ideal because even in the case of hidden variables, interventions will yield true causal relationships (assuming randomization between intervention levels). Karens v-structure cascades only apply when there are no hidden variables"/>
 </node>
 <node CREATED="1440928555981" ID="ID_445030991" MODIFIED="1440971243153" POSITION="right" TEXT="Key Theoretical Concepts">
 <node CREATED="1440928646489" ID="ID_1539740218" MODIFIED="1440957071675" TEXT="When speaking of correlation, we often mean statistical association.  Statistical association can be nonlinear and describe relationships between several objects.  Correlation is a type of statistical association that is pairwise and strictly linear."/>
