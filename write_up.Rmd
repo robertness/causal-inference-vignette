@@ -1,6 +1,6 @@
 ---
 title: "From Correlation to Causality: Statistical approaches to learning regulatory relationships from Large-scale Omics Experiments"
-output: html_document
+output: pdf_document
 ---
 
 Causal inference – the task of uncovering regulatory relationships between components of biomolecular pathways and networks - is a primary goal of omics datasets in molecular biology studies.  Statistical associations can reveal an alluring set of putative causal interactions, but when are such associations significant and reliable?  And when can they be interpreted as causal?  Our goal below is to provide suggestions for causal inference in large scale experiments, such as those resulting from high throughput omics technologies.  We describe the pitfalls of large datasets, and suggest methods to reliably find causal associations despite these pitfalls.
@@ -100,3 +100,4 @@ Knowledge about canonical causal relationships can be sourced from pathway datab
 The Causality in Omics tool list above provides impactful approaches that can drastically improve causal inference from omics datasets, by constraining the inference task, and thus allowing for accurate statistical inferences.  For instance, the task of assessing which of all the possible KEGG pathways is present in a dataset will be far less error-prone  than the task of assessing which of all possible combinations of my measured features might form a biological pathway.
 
 How should the tools listed be used?  They are most powerful when used in combination, and in fact the lines between them are somewhat arbitrary and frequently blurred.  For instance, using tool #1 and tool #2 in concert can be thought of as reducing the breadth and increasing the depth of the investigation.  Tools #4 and #5 call for use of interventions, but this task itself is complicated by measuring many things, since we have more features to expose to intervention. . Tool #3, prior biological knowledge, can be used to prioritize what to target with that limited set of interventions.  
+
