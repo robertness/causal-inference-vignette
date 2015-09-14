@@ -1,54 +1,93 @@
-\documentclass[]{article}
-\usepackage{lmodern}
-\usepackage{amssymb,amsmath}
-\usepackage{ifxetex,ifluatex}
-\usepackage{fixltx2e} % provides \textsubscript
-\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
-  \usepackage[T1]{fontenc}
-  \usepackage[utf8]{inputenc}
-\else % if luatex or xelatex
-  \ifxetex
-    \usepackage{mathspec}
-    \usepackage{xltxtra,xunicode}
-  \else
-    \usepackage{fontspec}
-  \fi
-  \defaultfontfeatures{Mapping=tex-text,Scale=MatchLowercase}
-  \newcommand{\euro}{€}
-\fi
-% use upquote if available, for straight quotes in verbatim environments
-\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
-% use microtype if available
-\IfFileExists{microtype.sty}{%
-\usepackage{microtype}
-\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
-}{}
-\ifxetex
-  \usepackage[setpagesize=false, % page size defined by xetex
-              unicode=false, % unicode breaks when used with xetex
-              xetex]{hyperref}
-\else
-  \usepackage[unicode=true]{hyperref}
-\fi
-\hypersetup{breaklinks=true,
-            bookmarks=true,
-            pdfauthor={},
-            pdftitle={},
-            colorlinks=true,
-            citecolor=blue,
-            urlcolor=blue,
-            linkcolor=magenta,
-            pdfborder={0 0 0}}
-\urlstyle{same}  % don't use monospace font for urls
-\setlength{\parindent}{0pt}
-\setlength{\parskip}{6pt plus 2pt minus 1pt}
-\setlength{\emergencystretch}{3em}  % prevent overfull lines
-\setcounter{secnumdepth}{0}
 
-\date{}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% This is a (brief) model paper using the achemso class
+%% The document class accepts keyval options, which should include
+%% the target journal and optionally the manuscript type.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass[journal=jacsat,manuscript=article]{achemso}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Place any additional packages needed here.  Only include packages
+%% which are essential, to avoid problems later. Do NOT use any
+%% packages which require e-TeX (for example etoolbox): the e-TeX
+%% extensions are not currently available on the ACS conversion
+%% servers.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage[version=3]{mhchem} % Formula subscripts using \ce{}
+\usepackage[T1]{fontenc}       % Use modern font encodings
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% If issues arise when submitting your manuscript, you may want to
+%% un-comment the next line.  This provides information on the
+%% version of every file you have used.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%\listfiles
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Place any additional macros here.  Please use \newcommand* where
+%% possible, and avoid layout-changing macros (which are not used
+%% when typesetting).
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand*\mycommand[1]{\texttt{\emph{#1}}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Meta-data block
+%% ---------------
+%% Each author should be given as a separate \author command.
+%%
+%% Corresponding authors should have an e-mail given after the author
+%% name as an \email command. Phone and fax numbers can be given
+%% using \phone and \fax, respectively; this information is optional.
+%%
+%% The affiliation of authors is given after the authors; each
+%% \affiliation command applies to all preceding authors not already
+%% assigned an affiliation.
+%%
+%% The affiliation takes an option argument for the short name.  This
+%% will typically be something like "University of Somewhere".
+%%
+%% The \altaffiliation macro should be used for new address, etc.
+%% On the other hand, \alsoaffiliation is used on a per author basis
+%% when authors are associated with multiple institutions.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\author{Robert O. Ness}
+\email{nessr@purdue.edu}
+\affiliation[Purdue University]{Department of Statistics, Purdue University, West Lafayette}
+\author{Karen Sachs}
+\affiliation[Stanford University]{School of Medicine, Stanford University, Palo Alto}
+\email{karens1@stanford.edu}
+\author{Olga Vitek}
+\email{o.vitek@neu.edu}
+\affiliation[Northeastern University]{College of Science, College of Computer and Information Science, Northeastern University, Palo Alto}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% The document title should be given as usual. Some journals require
+%% a running title from the author: this should be supplied as an
+%% optional argument to \title.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\title[]
+  {From Correlation to Causality: Statistical approaches to learning regulatory relationships from Large-scale Omics Experiments}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Some journals require a list of abbreviations or keywords to be
+%% supplied. These should be set up here, and will be printed after
+%% the title and author information, if needed.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\abbreviations{IR,NMR,UV}
+\keywords{American Chemical Society, \LaTeX}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% The manuscript does not need to include \maketitle, which is
+%% executed automatically.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{document}
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Start the main part of the manuscript here.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Introduction}
 Causal inference -- the task of uncovering regulatory relationships
 between components of biomolecular pathways and networks - is a primary
 goal of omics datasets in molecular biology studies. Statistical
@@ -72,8 +111,8 @@ addressed by improving experimental design and/or refining the
 biological question. Below, we describe the process of elucidating
 statistical associations from data and suggest practical approaches for
 analysis of large scale datasets.
-
-I. Statistical inference of causal relationships
+\section{Discussion}
+\subsection{I. Statistical inference of causal relationships}
 
 In MAPK signaling, Raf causally affects active Mek levels (via
 phosphorylation), while Mek causally affects Erk. Imagine this
@@ -121,13 +160,9 @@ conditional dependencies, (2) use information about the interventions
 included in the experiment to evaluate those conditional dependencies as
 evidence for potential causal relations.
 
-\begin{enumerate}
-\def\labelenumi{\Roman{enumi}.}
-\setcounter{enumi}{1}
-\itemsep1pt\parskip0pt\parsep0pt
-\item
-  Inference with large numbers of variables
-\end{enumerate}
+
+\subsection{II. Inference with large numbers of variables}
+
 
 Suppose we perform a large scale experiment, quantifying several
 thousands of phosphoproteins, including Raf, Mek and Erk. A typical
@@ -139,12 +174,16 @@ associations. The relationship between Raf, Mek and Erk, for instance,
 will be obscured by the many spurious relationships that they will each
 form with causally unrelated proteins.
 
-Fig1. In the MAPK signaling pathway, Raf regulates Mek, which regulates
+\begin{figure}[!tpb]
+\centerline{\includegraphics[width=0.5\textwidth]{figs/mapk.jpg}}
+\caption{In the MAPK signaling pathway, Raf regulates Mek, which regulates
 Erk. Top; the lines represent association - the activity of the kinases
 on this pathway are all correlated. Bottom: the lines represent
 conditional dependence, there is no conditional dependence edge from Raf
 to Erk because given you know Mek, knowing Raf tells you nothing about
-Erk. They are conditionally independent.
+Erk. They are conditionally independent.}
+\label{mapk}
+\end{figure}
 
 The problem of doing causal inference with large-scale experiments is
 two-fold. Firstly, sample size is typically far too small for the large
@@ -165,8 +204,12 @@ correlation, any correlation we find will be completely spurious. We
 record the maximum correlation between the 20 feature set and the 500
 feature set. We repeat this simulation 500 times.
 
-Fig2. As you increase the number of features, you get more high scoring
-spurious correlations.
+\begin{figure}[!tpb]
+\centerline{\includegraphics[width=0.5\textwidth]{figs/spurious_corr.png}}
+\caption{As you increase the number of features, you get more high scoring
+spurious correlations.}
+\label{spur_corr}
+\end{figure}
 
 The increased incidence of spurious correlation means increased false
 positives in detecting conditional dependence relationships. To
@@ -178,8 +221,12 @@ before, since we simulated independent features, any conditional
 dependence relationship reported by this algorithm is a false positive,
 i.e.~it doesn't actually exist in the mechanism that generated the data.
 
-Fig3. Increasing the number of measured features means increasing the
-false positive detection of conditional dependence.
+\begin{figure}[!tpb]
+\centerline{\includegraphics[width=0.5\textwidth]{figs/spurious_dep.png}}
+\caption{Fig3. Increasing the number of measured features means increasing the
+false positive detection of conditional dependence.}
+\label{spur_dep}
+\end{figure}
 
 As you increase the number of features you measure, the number of false
 positive detection of conditional dependence explodes. What this means
@@ -194,28 +241,23 @@ of features grows, the number of interventions needed to infer causality
 grows, and performing sufficient perturbation experiments becomes
 infeasible.
 
-\begin{enumerate}
-\def\labelenumi{\Roman{enumi}.}
-\setcounter{enumi}{2}
-\itemsep1pt\parskip0pt\parsep0pt
-\item
-  Inferring causality from omics experiments
-\end{enumerate}
+
+\subsection{III. Inferring causality from omics experiments}
 
 The problems outlined in section II paint a grim picture for causal
 learning in large datasets. Fortunately, these can be overcome, and
 effective causal learning can be a reality for large scale datasets. We
-proffer the approaches listed in the Causality Inference in Omics tools
+proffer the approaches listed in \textit{The Causality Inference in Omics Tool List}
 below.
 
-Refine the biological problem, thus limiting the number of features. If
+\begin{enumerate}
+\item \textit{Refine the biological problem}, thus limiting the number of features. If
 the broader biological system is well-studied, it may be possible design
 an experiment that focuses on a specific part of the system of interest,
 then ask more specific questions of the data, such as whether a
 particular edge or pathway is present. The more specific the question,
 the less data is needed overall to make solid statistical inferences.
-
-Measure more samples. If feasible, high throughput measurements that
+\item \textit{Measure more samples}. If feasible, high throughput measurements that
 measure many samples (not just many features) provide the statistical
 power to tell true associations from spurious associations. This
 intuition motivates the use technologies that have lower throughput but
@@ -223,8 +265,7 @@ enable measurement of more samples (or gather more data points per
 sample), for causal modeling. An example is single cell mass cytometry,
 where many thousands of cells per sample provide ample statistical
 power.
-
-Use prior knowledge, not just from experts but also from noisier
+\item \textit{Use prior knowledge}, not just from experts but also from noisier
 sources, to improve the process of searching for conditional
 independence. The MAPK pathway for instance, mentioned earlier, is well
 established and canonical. Assuming it, and other well established
@@ -239,8 +280,7 @@ different spatial compartments. Employing prior knowledge that provides
 evidence for the regulatory network reduces the number of connections
 and causal arcs under consideration, which allows the available data to
 make reliable statistical inferences.
-
-Employ targeted interventions selectively. Targeted interventions
+\item \textit{Employ targeted interventions selectively}. Targeted interventions
 perturb individual components of the system. An example is small
 molecule inhibitors which block the causal influence of a specific
 phoshoprotein on downstream components. Since it is usually prohibitive
@@ -254,8 +294,7 @@ revealed areas of the network in which causal inferences are not
 possible based on existing data. For instance, a resulting model graph
 with undirected edges can be inspected to reveal which nodes have
 potential to reveal the most causality if perturbed.
-
-Consider broad-scale interventions. Traditionally, experiments consider
+\item \textit{Consider broad-scale interventions}. Traditionally, experiments consider
 a biological response to a particular stimulus, possibly in the context
 of an inhibitor. In contrast, broad-scale interventions sacrifice
 specificity to perturb many features in the system simultaneously. The
@@ -274,8 +313,9 @@ cascading causal direct orientation deeper into the network. In contrast
 to targeted interventions, while it is difficult to know in advance what
 information will provided by broad-scale interventions, they provide
 more causal inference bang for your intervention buck.
+\end{enumerate}
 
-The Causality in Omics tool list above provides impactful approaches
+\textit{The Causality in Omics Tool List} above provides impactful approaches
 that can drastically improve causal inference from omics datasets, by
 constraining the inference task, and thus allowing for accurate
 statistical inferences. For instance, the task of assessing which of all
@@ -289,7 +329,7 @@ and frequently blurred. For instance, using tool \#1 and tool \#2 in
 concert can be thought of as reducing the breadth and increasing the
 depth of the investigation. Tools \#4 and \#5 call for use of
 interventions, but this task itself is complicated by measuring many
-things, since we have more features to expose to intervention. . Tool
+things, since we have more features to expose to intervention. Tool
 \#3, prior biological knowledge, can be used to prioritize what to
 target with that limited set of interventions.
 
