@@ -111,6 +111,7 @@ addressed by improving experimental design and/or refining the
 biological question. Below, we describe the process of elucidating
 statistical associations from data and suggest practical approaches for
 analysis of large scale datasets.
+
 \section{Discussion}
 \subsection{I. Statistical inference of causal relationships}
 
@@ -119,7 +120,7 @@ phosphorylation), while Mek causally affects Erk. Imagine this
 relationship was unknown: could it be detected from measurements of
 these phosphoproteins? Given sufficient data, a correlation will be
 detected between each pair of proteins, due to (direct and indirect)
-causal relationships. Figure 1, top panel, depicts these correlation as
+causal relationships. Figure 1, top panel, depicts these correlations as
 black lines, causal relationships are depicted as blue arrows.
 
 To go from correlation to causality, we need to perform an intervention:
@@ -141,20 +142,21 @@ dependence is called conditional dependence, because it is evaluated
 conditional on the state of other system components (i.e., the third
 variable). Let's see how this applies here, by examining the dependence
 between Raf and Erk. If we condition on Mek, then we assume that we know
-the value of Mek: perhaps we select only samples which have a high level
-of Mek, so Mek is fixed at level ``high''. Can the dependence between
+the value of Mek: perhaps we limit our analysis to samples which have a high level
+of Mek, so Mek is fixed at level "high". Can the dependence between
 Raf and Erk still be detected? If, due to noise, some of these Mek=high
 samples have an intermediate or even low level of Raf, will Erk be
 correspondingly low? Based on the causal mechanism, Erk will more
-closely follow Mek, since Mek is its causal parent. Because of that, the
-Raf-Erk dependence, once conditioned on Mek, will be reduced or
-eliminated, thus indicating that the Raf-Erk edge can be removed. Using
-this approach, it is possible to keep only the causal edges as depicted
-by the black lines in Figure 1, bottom panel.
+closely follow Mek (i.e. its values will tend to be high), since Mek is 
+its causal parent. Because of that, the Raf-Erk dependence, once conditioned 
+on Mek, will be reduced or eliminated, thus indicating that the Raf-Erk edge 
+can be removed. Using this approach, it is possible to keep only the causal edges 
+as depicted by the black lines in Figure 1, bottom panel.
 
-Computational methods that do causal inference in the context of an
-experiment that simultaneously measures multiple intercorrelated
-response variables all essentially have the same two step process; (1)
+Computational methods for causal inference in the context of
+experiments that simultaneously measure multiple intercorrelated
+features all rely on finding conditional dependence.  All of these algorithms
+essentially have the same two step process; (1)
 reduce the dense set of pairwise associations to a sparse set of
 conditional dependencies, (2) use information about the interventions
 included in the experiment to evaluate those conditional dependencies as
@@ -206,7 +208,7 @@ feature set. We repeat this simulation 500 times.
 
 \begin{figure}[!tpb]
 \centerline{\includegraphics[width=0.5\textwidth]{figs/spurious_corr.png}}
-\caption{As you increase the number of features, you get more high scoring
+\caption{Increasing the number of features results in more high scoring
 spurious correlations.}
 \label{spur_corr}
 \end{figure}
@@ -228,15 +230,16 @@ false positive detection of conditional dependence.}
 \label{spur_dep}
 \end{figure}
 
-As you increase the number of features you measure, the number of false
-positive detection of conditional dependence explodes. What this means
-is that the computational methods for causal inference will fail for the
+As we increased the number of features we measured, we saw a comparable increase in 
+the number of false positive detection of conditional dependence relationships. What this
+means is that the computational methods for causal inference will fail for the
 typical large-scale experiment, because when their input data contains a
 large amount of features relative to sample size, they cannot reliably
 detect the conditional dependence relationships they need to infer
 causality.
 
-The second problem is the requirement for interventions. As the number
+The second problem is the requirement for interventions. This is just as important as the 
+problem of spurious conditional dependence, but much easier to explain -- as the number
 of features grows, the number of interventions needed to infer causality
 grows, and performing sufficient perturbation experiments becomes
 infeasible.
@@ -269,7 +272,7 @@ power.
 sources, to improve the process of searching for conditional
 independence. The MAPK pathway for instance, mentioned earlier, is well
 established and canonical. Assuming it, and other well established
-connections a priori can help reduce the number of possible
+connections are present in the data a priori can help reduce the number of possible
 associations, and enable more effective use of data. Knowledge about
 canonical causal relationships can be sourced from pathway databases
 such as KEGG. Another example is contextual information, such as spatial
