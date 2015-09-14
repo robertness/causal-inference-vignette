@@ -101,3 +101,8 @@ The Causality in Omics tool list above provides impactful approaches that can dr
 
 How should the tools listed be used?  They are most powerful when used in combination, and in fact the lines between them are somewhat arbitrary and frequently blurred.  For instance, using tool #1 and tool #2 in concert can be thought of as reducing the breadth and increasing the depth of the investigation.  Tools #4 and #5 call for use of interventions, but this task itself is complicated by measuring many things, since we have more features to expose to intervention. . Tool #3, prior biological knowledge, can be used to prioritize what to target with that limited set of interventions.  
 
+```{r, echo=FALSE, eval=FALSE}
+setwd("Dropbox/causal inference writeup")
+markdown::renderMarkdown("write_up.Rmd", output = "write_up.md" )
+system("pandoc -s write_up.md -t latex -o write_up.tex")
+```
