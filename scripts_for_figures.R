@@ -12,10 +12,10 @@ for(i in 1:500){
   diag(cor_y) <- 0
   set_500[i] <- max(cor_y)
 }
-hist(set_500, col = rgb(0.1,0.1,0.1,0.5), xlab = NULL, xlim = c(min(set_20) , max(set_500) + .1 ), 
-     main = "Highest Spurious Correlation")
+hist(set_500, main = NULL, col = rgb(0.1,0.1,0.1,0.5), xlim = c(min(set_20) , max(set_500) + .1 ),
+     xlab = "Highest measured correlation between protein pairs")
 hist(set_20, col = rgb(0.8,0.8,0.8,0.5), add = TRUE)
-legend("topr", legend=c("20 features", "500 features"), cex = c(.5),  lwd=c(4,4), col=c(rgb(0.8,0.8,0.8,0.5), rgb(0.1,0.1,0.1,0.5)))
+legend("topr", legend=c("20 proteins", "500 proteins"), cex = c(.5),  lwd=c(4,4), col=c(rgb(0.8,0.8,0.8,0.5), rgb(0.1,0.1,0.1,0.5)))
 
 ## conditional dependence figure
 library(bnlearn)
@@ -28,7 +28,7 @@ for(i in 1:length(set_20)){
   y <- as.data.frame(matrix(rnorm(100 * 100), ncol = 100))
   set_100[i] <- narcs(gs(y, undirected = TRUE))
 }
-hist(set_100, col = rgb(0.1,0.1,0.1,0.5), xlab = NULL,  xlim = c(min(set_20), max(set_100)), 
-     main = "Spurious Conditional Dependence Relationships")
+hist(set_100, col = rgb(0.1,0.1,0.1,0.5), xlab = "Count of false positive detections of conditional dependence",  xlim = c(min(set_20), max(set_100)), 
+     main = NULL)
 hist(set_20, col = rgb(0.8,0.8,0.8,0.5), add = TRUE)
-legend("top", legend=c("20 features", "100 features"), cex = c(.5),  lwd=c(4,4), col=c(rgb(0.8,0.8,0.8,0.5), rgb(0.1,0.1,0.1,0.5)))
+legend("top", legend=c("20 proteins", "100 proteins"), cex = c(.5),  lwd=c(4,4), col=c(rgb(0.8,0.8,0.8,0.5), rgb(0.1,0.1,0.1,0.5)))
