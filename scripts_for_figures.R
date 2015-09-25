@@ -1,3 +1,30 @@
+.data <- read.delim("Downloads/holygrail.txt") %>%
+  select(X.P.MAPKKK., X.PP.MAPKK., X.PP.MAPK.) %>%
+  transmute(Raf = as.numeric(X.P.MAPKKK.), 
+            Mek = as.numeric(X.PP.MAPKK.), 
+            Erk = as.numeric(X.PP.MAPK.)) %>%
+  plot
+
+library(bnlearn)
+.data <- read.delim("Downloads/holygrail.txt") %>%
+  select(X.P.MAPKKK., X.PP.MAPKK., X.PP.MAPK.) %>%
+  transmute(Raf = as.numeric(X.P.MAPKKK.), 
+            Mek = as.numeric(X.PP.MAPKK.), 
+            Erk = as.numeric(X.PP.MAPK.)) %>%
+  plot
+  
+d.data <- discretize(.data, method = "hartemink", breaks = 10)
+.data$dMek <- d.data$Mek    
+cdplot(dMek ~ Raf, data = .data)
+
+  gs(undirected = TRUE, debug = TRUE) %>%
+  graphviz.plot
+  lapply(function(item) {
+    x <- jitter(item, 2000)
+    ifelse(x > 0 , x , 0)
+  }) %>%
+  as.data.frame 
+
 # R scripts for generating spurious correlation and conditional dependence histograms.
 ## correlation figure
 set_20 <- rep(0, 500)
@@ -32,3 +59,6 @@ hist(set_100, col = rgb(0.1,0.1,0.1,0.5), xlab = "Count of false positive detect
      main = NULL)
 hist(set_20, col = rgb(0.8,0.8,0.8,0.5), add = TRUE)
 legend("top", legend=c("20 proteins", "100 proteins"), cex = c(.5),  lwd=c(4,4), col=c(rgb(0.8,0.8,0.8,0.5), rgb(0.1,0.1,0.1,0.5)))
+
+
+
