@@ -1,19 +1,34 @@
-.data <- read.delim("Downloads/holygrail.txt") %>%
-  select(X.P.MAPKKK., X.PP.MAPKK., X.PP.MAPK.) %>%
-  transmute(Raf = as.numeric(X.P.MAPKKK.), 
-            Mek = as.numeric(X.PP.MAPKK.), 
-            Erk = as.numeric(X.PP.MAPK.)) %>%
-  plot
+library(dplyr)
+library(bnlearn)
+panel.cor <- function(x, y, digits=3, prefix="",  ...){
+  usr <- par("usr"); on.exit(par(usr))
+  par(usr = c(0, 1, 0, 1))
+  r <- abs(cor(x, y, method = "spearman"))
+  txt <- format(c(r, 0.123456789), digits=digits)[1]
+  txt <- paste(prefix, txt, sep="")
+  text(0.5, 0.5, txt, cex = 2)
+}
+set.seed(17)
+mapk <- read.delim("Downloads/mapk3.txt") %>%
+  sample_n(100) %>%
+  select(Mek1.PP, Erk2.PP, Mos.P) %>%
+  transmute(Raf = Mos.P, Mek = Mek1.PP, Erk = Erk2.PP) %>%
+  lapply(function(item) {
+    x <- jitter(item, 2000)
+    ifelse(x > 0 , x , 0)
+  }) %>%
+  as.data.frame 
+pairs(mapk, upper.panel = panel.cor)
+
+mapk2 <- mutate(mapk, Mek = ifelse(Mek > quantile(Mek)[3], "high", "low"))
+ggplot(mapk2, aes(x=Raf, y=Erk, group = Mek)) +
+  geom_point(aes(shape=Mek), size = 4)      
+ggplot(filter(mapk2, Mek == "high"), aes(x=Raf, y=Erk)) +
+  geom_point(aes(shape="circle"), size = 4)
+
 
 library(bnlearn)
-.data <- read.delim("Downloads/holygrail.txt") %>%
-  select(X.P.MAPKKK., X.PP.MAPKK., X.PP.MAPK.) %>%
-  transmute(Raf = as.numeric(X.P.MAPKKK.), 
-            Mek = as.numeric(X.PP.MAPKK.), 
-            Erk = as.numeric(X.PP.MAPK.)) %>%
-  plot
-  
-d.data <- discretize(.data, method = "hartemink", breaks = 10)
+d.data <- discretize(mapk, method = "hartemink", breaks = 8)
 .data$dMek <- d.data$Mek    
 cdplot(dMek ~ Raf, data = .data)
 
@@ -24,6 +39,27 @@ cdplot(dMek ~ Raf, data = .data)
     ifelse(x > 0 , x , 0)
   }) %>%
   as.data.frame 
+
+
+pairs(mapk, upper.panel = panel.cor) 
+par(mfrow = c(1, 2))
+plot(Erk ~ Raf, data = mapk, 
+     col = factor(mapk$Mek > .41),
+     main = "Raf vs Erk",
+     sub = "Red = High Mek")
+plot(Erk ~ Raf, data = filter(mapk, Mek > .41), col = "red")
+mapk_inh <- read.delim("Downloads/mapk_inh.txt") %>%
+  select(Mek1.PP, Erk2.PP, Mos.P) %>%
+  transmute(Raf = jitter(Mos.P, 2000), 
+            Mek = jitter(Mek1.PP, 2000),
+            Erk = runif(length(Erk2.PP), 0, .2)) %>%
+  sample_n(100) 
+pairs(mapk_inh, main = "Inhibition on Mek",
+      upper.panel = panel.cor)
+
+gs(mapk) %>%
+  graphviz.plot
+
 
 # R scripts for generating spurious correlation and conditional dependence histograms.
 ## correlation figure
