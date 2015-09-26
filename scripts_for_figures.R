@@ -20,12 +20,17 @@ mapk <- read.delim("Downloads/mapk3.txt") %>%
   as.data.frame 
 pairs(mapk, upper.panel = panel.cor)
 
-mapk2 <- mutate(mapk, Mek = ifelse(Mek > quantile(Mek)[3], "high", "low"))
-ggplot(mapk2, aes(x=Raf, y=Erk, group = Mek)) +
-  geom_point(aes(shape=Mek), size = 4)      
-ggplot(filter(mapk2, Mek == "high"), aes(x=Raf, y=Erk)) +
-  geom_point(aes(shape="circle"), size = 4)
+library(ggplot2)
+library(gridExtra)
 
+mapk2 <- mutate(mapk, Mek = ifelse(Mek > quantile(Mek)[3], "high", "low"))
+p1 <- ggplot(mapk2, aes(x=Raf, y=Erk, group = Mek)) +
+  geom_point(aes(shape=Mek), size = 4) + 
+  guides(shape=FALSE)
+p2 <- ggplot(filter(mapk2, Mek == "high"), aes(x=Raf, y=Erk)) +
+  geom_point(aes(shape="circle"), size = 4) + 
+  guides(shape=FALSE)
+grid.arrange(p1, p2, ncol=2)
 
 library(bnlearn)
 d.data <- discretize(mapk, method = "hartemink", breaks = 8)
