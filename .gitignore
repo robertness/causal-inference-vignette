@@ -1,3 +1,9 @@
+## Don't want the reviews to be public
+reviews\ and\ response/
+
+## Don't need the dropbox file
+.dropbox
+
 ## Core latex/pdflatex auxiliary files:
 *.aux
 *.lof
