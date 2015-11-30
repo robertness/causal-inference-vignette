@@ -36,7 +36,6 @@ library(bnlearn)
 d.data <- discretize(mapk, method = "hartemink", breaks = 8)
 .data$dMek <- d.data$Mek    
 cdplot(dMek ~ Raf, data = .data)
-
   gs(undirected = TRUE, debug = TRUE) %>%
   graphviz.plot
   lapply(function(item) {
@@ -87,15 +86,20 @@ legend("topr", legend=c("20 proteins", "500 proteins"), cex = c(.5),  lwd=c(4,4)
 
 ## conditional dependence figure
 library(bnlearn)
-set_20 <- rep(0, 500)
-set_100 <- rep(0, 500)
-for(i in 1:length(set_20)){
-  print(i)
-  x <- as.data.frame(matrix(rnorm(100 * 20), ncol = 20))
-  set_20[i] <- narcs(gs(x, undirected = TRUE))
-  y <- as.data.frame(matrix(rnorm(100 * 100), ncol = 100))
-  set_100[i] <- narcs(gs(y, undirected = TRUE))
+do_sim <- function(learning_func){
+  set_20 <- rep(0, 500)
+  set_100 <- rep(0, 500)
+  for(i in 1:length(set_20)){
+    print(i)
+    x <- as.data.frame(matrix(rnorm(100 * 20), ncol = 20))
+    set_20[i] <- narcs(learning_func(x, undirected = TRUE))
+    y <- as.data.frame(matrix(rnorm(100 * 100), ncol = 100))
+    set_100[i] <- narcs(learning_func(y, undirected = TRUE))
+  }
+  return(list(set_20 = set_20, set_100 = set_100))
 }
+results <- lapply(c(gs, fast.iamb, inter.iamb), do_sim)
+names(results) <- c("gs", "fast.iamb", "inter.iamb")
 hist(set_100, col = rgb(0.1,0.1,0.1,0.5), xlab = "Count of false positive detections of conditional dependence",  xlim = c(min(set_20), max(set_100)), 
      main = NULL)
 hist(set_20, col = rgb(0.8,0.8,0.8,0.5), add = TRUE)
