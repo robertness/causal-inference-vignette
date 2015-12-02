@@ -1,5 +1,24 @@
 library(dplyr)
 library(bnlearn)
+
+# Calculate MI
+
+get_mi <- function(x, y, p, base = p, ...){
+  disc <- discretize(data.frame(x, y), 
+                     method="quantile", 
+                     breaks = p) 
+  joint <- prop.table(table(disc) + .000001) 
+  x_mar <- prop.table(table(disc$x))
+  y_mar <- prop.table(table(disc$y))
+  joint %>%
+    apply(1, function(row) row / y_mar) %>%
+    apply(1, function(row) row / x_mar) %>%
+    log(base = p) %>%
+    {joint * .} %>%
+    sum
+}
+
+# Function for generating correlation panels
 panel.cor <- function(x, y, digits=3, prefix="",  ...){
   usr <- par("usr"); on.exit(par(usr))
   par(usr = c(0, 1, 0, 1))
@@ -8,13 +27,14 @@ panel.cor <- function(x, y, digits=3, prefix="",  ...){
   txt <- paste(prefix, txt, sep="")
   text(0.5, 0.5, txt, cex = 2)
 }
-set.seed(17)
+set.seed(67)
+# Generating the pairs table
 mapk <- read.delim("Downloads/mapk3.txt") %>%
-  sample_n(100) %>%
+  sample_n(60) %>%
   select(Mek1.PP, Erk2.PP, Mos.P) %>%
   transmute(Raf = Mos.P, Mek = Mek1.PP, Erk = Erk2.PP) %>%
   lapply(function(item) {
-    x <- jitter(item, 2000)
+    x <- jitter(item, 2500)
     ifelse(x > 0 , x , 0)
   }) %>%
   as.data.frame 
@@ -22,15 +42,28 @@ pairs(mapk, upper.panel = panel.cor)
 
 library(ggplot2)
 library(gridExtra)
+# Zooming in on Erk and Raf
+mapk2 <- mutate(mapk, 
+                Mek = ifelse(Mek > quantile(Mek)[4], "high", "low"),
+                Mek = factor(Mek, levels = c("derp", "low", "high")),
+                shape = ifelse(Mek == "low", "circle", "square"))
 
-mapk2 <- mutate(mapk, Mek = ifelse(Mek > quantile(Mek)[3], "high", "low"))
 p1 <- ggplot(mapk2, aes(x=Raf, y=Erk, group = Mek)) +
-  geom_point(aes(shape=Mek), size = 4) + 
+  geom_point(aes(shape=shape), size = 4) + 
+  scale_shape_manual(name = "Mek", labels = c("low", "high"), values = c(1, 16)) +
   guides(shape=FALSE)
 p2 <- ggplot(filter(mapk2, Mek == "high"), aes(x=Raf, y=Erk)) +
   geom_point(aes(shape="circle"), size = 4) + 
   guides(shape=FALSE)
 grid.arrange(p1, p2, ncol=2)
+
+# CI Test for Erk and Raf
+.data <- discretize(mapk, 
+           method="quantile", 
+           breaks = 3)
+ci.test("Erk", "Raf", "Mek", data = .data, test = "x2", debug = T)
+ci.test("Raf", "Mek", "Erk", data = .data, test = "x2", debug = T)
+ci.test("Erk", "Mek", "Raf", data = .data, test = "x2", debug = T)
 
 library(bnlearn)
 d.data <- discretize(mapk, method = "hartemink", breaks = 8)
@@ -67,14 +100,15 @@ gs(mapk) %>%
 
 # R scripts for generating spurious correlation and conditional dependence histograms.
 ## correlation figure
-set_20 <- rep(0, 500)
-set_500 <- rep(0, 500)
-for(i in 1:500){
-  x <- matrix(rnorm(100 * 20), ncol = 20)
+m <- 1000
+set_20 <- rep(0, m)
+set_500 <- rep(0, m)
+for(i in 1:m){
+  x <- matrix(rnorm(20 * 20), ncol = 20)
   cor_x <- cor(x)
   diag(cor_x) <- 0
   set_20[i] <- max(cor_x)
-  y <- matrix(rnorm(100 * 500), ncol = 500)
+  y <- matrix(rnorm(20 * 500), ncol = 500)
   cor_y <- cor(y)
   diag(cor_y) <- 0
   set_500[i] <- max(cor_y)
