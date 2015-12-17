@@ -201,15 +201,6 @@ address = {New York, NY}
   publisher={ASBMB}
 }
 
-@inproceedings{taskar2004learning,
-  title={Learning associative Markov networks},
-  author={Taskar, Ben and Chatalbashev, Vassil and Koller, Daphne},
-  booktitle={Proceedings of the twenty-first international conference on Machine learning},
-  pages={102},
-  year={2004},
-  organization={ACM}
-}
-
 @article{fan2014challenges,
   title={Challenges of big data analysis},
   author={Fan, Jianqing and Han, Fang and Liu, Han},
@@ -233,13 +224,6 @@ address = {New York, NY}
   author={Pearl, Judea},
   year={2009},
   publisher={Cambridge university press}
-}
-
-@book{pearl2014probabilistic,
-  title={Probabilistic reasoning in intelligent systems: networks of plausible inference},
-  author={Pearl, Judea},
-  year={2014},
-  publisher={Morgan Kaufmann}
 }
 
 @article{scutari2009learning,

@@ -1,0 +1,44 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<title>New Mindmap</title>
+<style type="text/css">
+    li { list-style: none;  margin: 0; }
+    p { margin: 0; }
+
+    span.l { color: red; font-weight: bold; }
+
+    a.mapnode:link {text-decoration: none; color: black; }
+    a.mapnode:visited {text-decoration: none; color: black; }
+    a.mapnode:active {text-decoration: none; color: black; }
+    a.mapnode:hover {text-decoration: none; color: black; background: #eeeee0; }
+
+</style>
+<!-- ^ Position is not set to relative / absolute here because of Mozilla -->
+</head>
+<body>
+<p>New Mindmap
+<ul><li><p>We next simulate an experiment to elucidate how dimensionality affects causal network inference
+<p>We simulate data from a dependence network of 60 proteins and evaluate performance of structure inference algorithms in recovering the structure.
+<p>We then simulate a second experiment where the number of proteins is increased 99, to see how the increased protein coverage affected performance.
+<p>We varied depth as well as breadth -- In order to evaluate the effect of increasing sample size we start with 100 replicates, then repeat the two experiments with 200 replicates.
+<p>We evaluate performance by counting the total number of false positives (reject conditional independence for two conditionally independent proteins) and true positives (correct rejections)
+<p>We built the dependence structure using the simple case of variable triplets
+<ul><li><p>Testing conditional independence requires at least three variables -- two to compare, and at least one variable upon which to condition.
+<p>Thus we created triplets of Guassian variables A, B, and C
+<ul><li><p>C has a normal distribution with 0 mean and variance 1 
+<p>A and B were also created as 0 mean Gaussian variables with individual variance of 1 and covariance with C of .6
+<p>A and B are conditionally independent of eachother given C.
+<p>Thus for a triplet there are two edges, one from A to C and B to C, while the edge from A to B is missing.
+</li>
+</ul><p>Thus we created a network of 60 proteins with 20 triplets -- disjoint subnetworks with two edges each, 40 in total.
+</li>
+</ul><p>We examined two cases for expanding the number of measured proteins
+<ul><li><p>The first describes the case of measuring proteins that provide no additional information about the biology.
+<p><span style="font-family: SansSerif, sans-serif; ">We model this scenariao by &nbsp;adding 39 independently simulated proteins in the second experiment &nbsp;-- &nbsp;they are completely independent from anything else in the network such that concluding that an edge contained one of these nodes would be a false positive.</span>
+<p>We then look at the case where more proteins are added, but the added proteins are informative about the biology.
+<p>We model this by increasing the number of triplets from 20 to 33, again to 99 proteins in total.
+</li>
+</ul></li>
+</ul></body>
+</html>

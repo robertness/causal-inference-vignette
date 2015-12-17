@@ -99,7 +99,7 @@ gs(mapk) %>%
 
 
 # R scripts for generating spurious correlation and conditional dependence histograms.
-## correlation figure
+## correlation figure at 20 reps
 m <- 1000
 set_20 <- rep(0, m)
 set_500 <- rep(0, m)
@@ -114,9 +114,40 @@ for(i in 1:m){
   set_500[i] <- max(cor_y)
 }
 hist(set_500, main = NULL, col = rgb(0.1,0.1,0.1,0.5), xlim = c(min(set_20) , max(set_500) + .1 ),
-     xlab = "Highest measured correlation between protein pairs")
+     xlab = "Highest observed correlation between unrelated protein pairs")
 hist(set_20, col = rgb(0.8,0.8,0.8,0.5), add = TRUE)
-legend("topright", legend=c("20 proteins", "500 proteins"), cex = c(.5),  lwd=c(4,4), col=c(rgb(0.8,0.8,0.8,0.5), rgb(0.1,0.1,0.1,0.5)))
+legend("topright", legend=c("20 proteins", "500 proteins"), cex = c(.6),  lwd=c(8,8), col=c(rgb(0.8,0.8,0.8,0.5), rgb(0.1,0.1,0.1,0.5)))
+
+## Generalization of the above sim
+cor_sim <- function(n, p1, p2, m){
+  set_1 <- rep(0, m)
+  set_2 <- rep(0, m)
+  for(i in 1:m){
+    print(i)
+    x <- matrix(rnorm(n * p1), ncol = p1)
+    cor_x <- cor(x)
+    diag(cor_x) <- 0
+    set_1[i] <- max(cor_x)
+    y <- matrix(rnorm(n * p2), ncol = p2)
+    cor_y <- cor(y)
+    diag(cor_y) <- 0
+    set_2[i] <- max(cor_y)
+  }
+  list(set_1 = set_1, set_2 = set_2)
+}
+m <- 500
+n <- 50
+p1 <- 20
+p2 <- 5000
+r <- cor_sim(n, p1, p2, m)
+hist(r$set_2, main = NULL, col = rgb(0.1,0.1,0.1,0.5), xlim = c(min(r$set_1) , max(r$set_2) + .1 ),
+     freq = F,
+     xlab = "Highest observed correlation between unrelated protein pairs")
+hist(r$set_1, col = rgb(0.8,0.8,0.8,0.5), freq = F, add = TRUE)
+legend("topleft", legend=c(paste(p1, " proteins"), paste(p2, " proteins")), 
+       cex = c(.8),  lwd=c(8,8), col=c(rgb(0.8,0.8,0.8,0.5), rgb(0.1,0.1,0.1,0.5)))
+
+
 
 ## conditional dependence figure
 library(bnlearn)
@@ -145,14 +176,14 @@ hist(results1[["gs"]][["set_20"]],
      col = rgb(0.8,0.8,0.8,0.5), 
      add = TRUE,
      freq = T)
-legend("top", legend=c("20 proteins", "100 proteins"), cex = 1,  lwd=c(8,8), col=c(rgb(0.8,0.8,0.8,0.5), rgb(0.1,0.1,0.1,0.5)))
+legend("top", legend=c("20 proteins", "100 proteins"), cex = .9,  lwd=c(8,8), col=c(rgb(0.8,0.8,0.8,0.5), rgb(0.1,0.1,0.1,0.5)))
 
 ## conditional dependence figure
 library(bnlearn)
 do_sim <- function(learning_func, n, sigma){
   m <- 100
-  p1 <- 15
-  p2 <- 75
+  p1 <- 20
+  p2 <- 100
   set_1 <- rep(0, m)
   set_2 <- rep(0, m)
   for(i in 1:length(set_1)){
@@ -261,3 +292,198 @@ lines(n_set, l3[1:30], col = "darkgreen")
 legend("topright", legend=c("p (features) = 50", "p = 150", "p = 300"), cex = .5,  
        lwd=c(4,4, 4), 
        col=c("darkblue", "darkblue", "darkgreen"))
+
+# Constrasting with discovery
+
+## Sim relationships
+library(bnlearn)
+get_true_p <- function(p, prop){
+  {function(x) x^2 - x - 2 * choose(p, 2) * prop} %>% # Calculated from the choose function
+    uniroot(c(0, p)) %$%
+    root %>%
+    round
+}
+simMVNData <- function(num.vars, num.obs, corr){ 
+  cov.mat <- matrix(rep(corr, num.vars^2), ncol = num.vars)
+  diag(cov.mat) <- 1
+  mvrnorm(num.obs, rep(0, num.vars), Sigma=cov.mat) %>%
+    as.data.frame 
+}
+get_performance <- function(inferred_net, true_net){
+  arcs(net) %>%
+    apply(1, function(r){
+      r <- as.character(r)
+      r <- sort(r)
+      paste(r, collapse = "-")
+    }) %>%
+  {as.data.frame(t(.))} %>%
+    unique %>%
+  {rownames(.) <- NULL;.} %>%
+    apply(1, function(r){
+      r <- as.character(r)
+      if(grepl("T", r[1]) && grepl("T", r[2])) return(TRUE)
+      return(FALSE)
+    }) %>%
+  {c(TP_count = sum(.), FP_count = length(.) - sum(.))}
+}
+# Calculate a set of related pairs that is 5% of all pairs
+sim_instance <- function(p, n, true_p_count){
+  simMVNData(true_p_count, n, .8) %>%
+  setNames(paste0("T", 1:ncol(.))) %>%
+  cbind(., simMVNData(p - ncol(.), n, 0)) %>%
+  gs(undirected = TRUE) %>%
+  get_results
+}
+
+repeat_sim <- function(m, args){
+  tp = rep(NA, m)
+  fp = rep(NA, m)
+  print(args)
+  for(i in 1:m){
+    print(i)
+    instance <- do.call("sim_instance", args)
+    tp[i] <- instance[1]
+    fp[i] <- instance[2]
+  }
+  list(tp = tp, fp = fp)
+}
+
+repeat_sim <- function(m, args){
+  tp = rep(NA, m)
+  fp = rep(NA, m)
+  print(args)
+  for(i in 1:m){
+    print(i)
+    instance <- do.call("sim_instance", args)
+    tp[i] <- instance[1]
+    fp[i] <- instance[2]
+  }
+  list(tp = tp, fp = fp)
+}
+
+
+
+# Stablize graph
+## This will make it so I get a fixed amount of edges each time.
+permute_graph <- function(g){
+  in_degree <- igraph::degree(g, mode = "in")
+  out_degree <- igraph::degree(g, mode = "out")
+  igraph::degree.sequence.game(out_degree, in_degree, method = "simple.no.multiple")
+}
+as_bn <- function(g){
+  g %>%
+  igraph.to.graphNEL %>%
+  as.bn
+}
+sim_covariance_with_constant_partials <- function(net, rho){
+  net %>%
+    amat %>%
+    multiply_by(rho) %>%
+    {. + diag(nrow(.)) * (abs(min(eigen(.)$values)) + nrow(.))} %>%
+    solve  
+}
+get_edges <- function(net){
+  arcs(net) %>%
+    apply(1, function(edge) paste(sort(as.character(edge)), collapse = "--")) %>%
+    unique
+}
+compare_nets <- function(inferred, truth){
+  true_edges <- get_edges(truth)
+  inferred_edges <- get_edges(inferred)
+  fp_count <- length(setdiff(inferred_edges, true_edges))
+  tp_count <- length(intersect(inferred_edges, true_edges))
+  c(tp= tp_count, fp = fp_count)
+}
+
+
+#Sim according to KEGG
+library(devtools)
+library(ensurer)
+library(bninfo)
+library(clusterGeneration)
+# Get KEGG
+source_gist("de6639a871ef36ce1d1c")
+small_p <- 20
+big_p <- 100
+small_n <- 100
+big_n <- 200
+rho <- .9
+
+
+# Need to have a way of applying permute edges to the 
+do_sim <- function(m, small_p, big_p, n, rho){
+  starting_graph <- signalgraph::power_signal_graph(g, small_p)
+  scaled_graph <- signalgraph::power_signal_graph(g, big_p, lucy::reverse_edges(starting_graph)
+  net <- starting_graph %>%
+    permute_graph %>%
+    as_bn %>%
+    moral 
+  small_data <- sim_covariance_with_constant_partials(net, rho) %>%
+    {mvrnorm(small_n, rep(0, small_p), Sigma=.)} %>%
+    as.data.frame
+  noisy_data <- cbind(small_data, matrix(rnorm(small_n * (big_p - small_p)), ncol = big_p - small_p))
+  scaled_data <- scaled_graph %>%
+    permute_graph %>%
+    as_bn %>%
+    moral
+  
+  gs(undirected = TRUE) %>%
+    compare_nets(net)
+}
+
+
+
+small_n <- 100
+big_n <- 200
+small_p <- 20
+big_p <- 100
+tpc_small <- get_true_p(small_p, .4)
+tpc_big <- get_true_p(big_p, .4)
+combos <- list(  
+  list(p = small_p, n = small_n, true_p_count = tpc_small),
+  list(p = small_p, n = big_n, true_p_count =tpc_small),
+  list(p = big_p, n = small_n, true_p_count = tpc_small),
+  list(p = big_p, n = big_n, true_p_count = tpc_small),
+  list(p = big_p, n = small_n,true_p_count =  tpc_big),
+  list(p = big_p, n = big_n, true_p_count = tpc_big)
+)
+results <- lapply(combos, function(combo){
+  do.call("repeat_sim", c(list(m = 50), list(combo)))
+})
+names(results) <- c("small_p_small_n", "small_p_big_n", "big_p_small_n", "big_p_big_n", "big_p_small_n_w_increase", "big_p_big_n_w_increase")
+results$big_p_small_w_increase <- repeat_sim(50, list(big_p, small_n, tpc_big))
+
+#A
+hist(results$small_p_small_n$tp, main = NULL, freq = F, col = rgb(0.1,0.1,0.1,0.5), ylim = c(0, .3), xlim = c(10, 30))
+hist(results$big_p_small_n$tp, col = rgb(0.8,0.8,0.8,0.5), freq = FALSE, add = TRUE)
+
+#B
+hist(results$small_p_big_n$tp, main = NULL, freq = FALSE, col = rgb(0.1,0.1,0.1,0.5), ylim = c(0, .3), xlim = c(10, 30))
+hist(results$big_p_big_n$tp, col = rgb(0.8,0.8,0.8,0.5), freq = FALSE, add = TRUE)
+
+#C
+hist(results$small_p_small_n$tp, main = NULL, freq = F,  col = rgb(0.1,0.1,0.1,0.5), ylim = c(0, .3), xlim = c(10, 140))
+hist(results$big_p_small_n_w_increase$tp, col = rgb(0.8,0.8,0.8,0.5), freq = F, add = TRUE)
+
+#D
+hist(results$small_p_big_n$tp, main = NULL, freq = F,  col = rgb(0.1,0.1,0.1,0.5), ylim = c(0, .3), xlim = c(10, 140))
+hist(results$big_p_big_n_w_increase$tp, col = rgb(0.8,0.8,0.8,0.5), freq = F, add = TRUE)
+
+#A
+hist(results$small_p_small_n$fp, main = NULL, freq = FALSE, col = rgb(0.1,0.1,0.1,0.5), ylim = c(0, .4), xlim = c(0, 148))
+hist(results$big_p_small_n$fp, col = rgb(0.8,0.8,0.8,0.5), freq = FALSE, add = TRUE)
+
+#B
+hist(results$small_p_big_n$fp, main = NULL, freq = FALSE, col = rgb(0.1,0.1,0.1,0.5), ylim = c(0, .4), xlim = c(0, 148))
+hist(results$big_p_big_n$fp, col = rgb(0.8,0.8,0.8,0.5), freq = FALSE, add = TRUE)
+
+#C
+hist(results$small_p_small_n$fp, main = NULL, freq = FALSE, col = rgb(0.1,0.1,0.1,0.5), ylim = c(0, .4), xlim = c(0, 148))
+hist(results$big_p_small_n_w_increase$fp, col = rgb(0.8,0.8,0.8,0.5), freq = FALSE, add = TRUE)
+
+#D
+hist(results$small_p_big_n$fp, main = NULL, freq = FALSE, col = rgb(0.1,0.1,0.1,0.5), ylim = c(0, .4), xlim = c(0, 148))
+hist(results$big_p_big_n_w_increase$fp, col = rgb(0.8,0.8,0.8,0.5), freq = F, add = TRUE)
+
+#legend("topright", legend=c("20 proteins", "100 proteins"), cex = c(.6),  lwd=c(8,8), col=c(rgb(0.8,0.8,0.8,0.5), rgb(0.1,0.1,0.1,0.5)))
+
