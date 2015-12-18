@@ -4,10 +4,10 @@ library(bnlearn)
 # Calculate MI
 
 get_mi <- function(x, y, p, base = p, ...){
-  disc <- discretize(data.frame(x, y), 
-                     method="quantile", 
-                     breaks = p) 
-  joint <- prop.table(table(disc) + .000001) 
+  disc <- discretize(data.frame(x, y),
+                     method="quantile",
+                     breaks = p)
+  joint <- prop.table(table(disc) + .000001)
   x_mar <- prop.table(table(disc$x))
   y_mar <- prop.table(table(disc$y))
   joint %>%
@@ -37,29 +37,29 @@ mapk <- read.delim("Downloads/mapk3.txt") %>%
     x <- jitter(item, 2500)
     ifelse(x > 0 , x , 0)
   }) %>%
-  as.data.frame 
+  as.data.frame
 pairs(mapk, upper.panel = panel.cor)
 
 library(ggplot2)
 library(gridExtra)
 # Zooming in on Erk and Raf
-mapk2 <- mutate(mapk, 
+mapk2 <- mutate(mapk,
                 Mek = ifelse(Mek > quantile(Mek)[4], "high", "low"),
                 Mek = factor(Mek, levels = c("derp", "low", "high")),
                 shape = ifelse(Mek == "low", "circle", "square"))
 
 p1 <- ggplot(mapk2, aes(x=Raf, y=Erk, group = Mek)) +
-  geom_point(aes(shape=shape), size = 4) + 
+  geom_point(aes(shape=shape), size = 4) +
   scale_shape_manual(name = "Mek", labels = c("low", "high"), values = c(1, 16)) +
   guides(shape=FALSE)
 p2 <- ggplot(filter(mapk2, Mek == "high"), aes(x=Raf, y=Erk)) +
-  geom_point(aes(shape="circle"), size = 4) + 
+  geom_point(aes(shape="circle"), size = 4) +
   guides(shape=FALSE)
 grid.arrange(p1, p2, ncol=2)
 
 # CI Test for Erk and Raf
-.data <- discretize(mapk, 
-           method="quantile", 
+.data <- discretize(mapk,
+           method="quantile",
            breaks = 3)
 ci.test("Erk", "Raf", "Mek", data = .data, test = "x2", debug = T)
 ci.test("Raf", "Mek", "Erk", data = .data, test = "x2", debug = T)
@@ -67,7 +67,7 @@ ci.test("Erk", "Mek", "Raf", data = .data, test = "x2", debug = T)
 
 library(bnlearn)
 d.data <- discretize(mapk, method = "hartemink", breaks = 8)
-.data$dMek <- d.data$Mek    
+.data$dMek <- d.data$Mek
 cdplot(dMek ~ Raf, data = .data)
   gs(undirected = TRUE, debug = TRUE) %>%
   graphviz.plot
@@ -75,22 +75,22 @@ cdplot(dMek ~ Raf, data = .data)
     x <- jitter(item, 2000)
     ifelse(x > 0 , x , 0)
   }) %>%
-  as.data.frame 
+  as.data.frame
 
 
-pairs(mapk, upper.panel = panel.cor) 
+pairs(mapk, upper.panel = panel.cor)
 par(mfrow = c(1, 2))
-plot(Erk ~ Raf, data = mapk, 
+plot(Erk ~ Raf, data = mapk,
      col = factor(mapk$Mek > .41),
      main = "Raf vs Erk",
      sub = "Red = High Mek")
 plot(Erk ~ Raf, data = filter(mapk, Mek > .41), col = "red")
 mapk_inh <- read.delim("Downloads/mapk_inh.txt") %>%
   select(Mek1.PP, Erk2.PP, Mos.P) %>%
-  transmute(Raf = jitter(Mos.P, 2000), 
+  transmute(Raf = jitter(Mos.P, 2000),
             Mek = jitter(Mek1.PP, 2000),
             Erk = runif(length(Erk2.PP), 0, .2)) %>%
-  sample_n(100) 
+  sample_n(100)
 pairs(mapk_inh, main = "Inhibition on Mek",
       upper.panel = panel.cor)
 
@@ -136,15 +136,15 @@ cor_sim <- function(n, p1, p2, m){
   list(set_1 = set_1, set_2 = set_2)
 }
 m <- 500
-n <- 50
-p1 <- 20
-p2 <- 5000
+n <- 60
+p1 <- 60
+p2 <- 6000
 r <- cor_sim(n, p1, p2, m)
 hist(r$set_2, main = NULL, col = rgb(0.1,0.1,0.1,0.5), xlim = c(min(r$set_1) , max(r$set_2) + .1 ),
      freq = F,
      xlab = "Highest observed correlation between unrelated protein pairs")
 hist(r$set_1, col = rgb(0.8,0.8,0.8,0.5), freq = F, add = TRUE)
-legend("topleft", legend=c(paste(p1, " proteins"), paste(p2, " proteins")), 
+legend("topleft", legend=c(paste(p1, " proteins"), paste(p2, " proteins")),
        cex = c(.8),  lwd=c(8,8), col=c(rgb(0.8,0.8,0.8,0.5), rgb(0.1,0.1,0.1,0.5)))
 
 
@@ -166,14 +166,14 @@ do_sim <- function(learning_func){
 #results <- lapply(c(gs, fast.iamb, inter.iamb), do_sim)
 #names(results) <- c("gs", "fast.iamb", "inter.iamb")
 results1 <- list(gs = do_sim(gs))
-hist(results1[["gs"]][["set_100"]], 
-     col = rgb(0.1,0.1,0.1,0.5), 
-     xlab = "Count of false positive detections of conditional dependence",  
+hist(results1[["gs"]][["set_100"]],
+     col = rgb(0.1,0.1,0.1,0.5),
+     xlab = "Count of false positive detections of conditional dependence",
      xlim = c(0, 140),
      ylim = c(0, 130),
      main = NULL, freq = T)
-hist(results1[["gs"]][["set_20"]], 
-     col = rgb(0.8,0.8,0.8,0.5), 
+hist(results1[["gs"]][["set_20"]],
+     col = rgb(0.8,0.8,0.8,0.5),
      add = TRUE,
      freq = T)
 legend("top", legend=c("20 proteins", "100 proteins"), cex = .9,  lwd=c(8,8), col=c(rgb(0.8,0.8,0.8,0.5), rgb(0.1,0.1,0.1,0.5)))
@@ -194,22 +194,22 @@ do_sim <- function(learning_func, n, sigma){
     set_2[i] <- narcs(learning_func(y, undirected = TRUE))
   }
   # return(list(set_1 = set_1, set_2 = set_2))
-  hist(set_1, 
+  hist(set_1,
        col = rgb(0.1,0.1,0.1,0.5),
        #xlab = NULL,
-       #xlab = "Count of false positive detections of conditional dependence",  
+       #xlab = "Count of false positive detections of conditional dependence",
        xlim = c(0, 150),
        ylim = c(0, .4),
        freq = FALSE,
        main = paste(n, sigma, sep="-")
        )
-  hist(set_2, 
+  hist(set_2,
        freq = FALSE,
-       col = rgb(0.8,0.8,0.8,0.5), 
+       col = rgb(0.8,0.8,0.8,0.5),
        add = TRUE)
-#   legend("topright", legend=c(paste(p1, "proteins"), paste(p2, "proteins")), 
-#          cex = .5,  
-#          lwd=c(4,4), 
+#   legend("topright", legend=c(paste(p1, "proteins"), paste(p2, "proteins")),
+#          cex = .5,
+#          lwd=c(4,4),
 #          col=c(rgb(0.8,0.8,0.8,0.5)))
 }
 # results <- lapply(c(gs, fast.iamb, inter.iamb), do_sim)
@@ -238,7 +238,7 @@ count_sig <- function(n, p, s, alpha = .1){
   sum
 }
 # Repeat count_sig m times to get a distribution of counts
-sig_dist <- function(n, p, s, m){  
+sig_dist <- function(n, p, s, m){
   dist <- rep(NA, m)
   for(i in 1:m){
     print(i)
@@ -250,22 +250,22 @@ sig_dist <- function(n, p, s, m){
 plot_case <- function(n, p1, p2, s, m){
   small_p_case <- sig_dist(n, p1, s, m)
   big_p_case <- sig_dist(n, p2, s, m)
-  hist(small_p_case, 
+  hist(small_p_case,
        col = rgb(0.1,0.1,0.1,0.5),
        #xlab = NULL,
-       xlab = "Count of false positives @ < 10% significance (falsely conclude difference between groups) ",  
+       xlab = "Count of false positives @ < 10% significance (falsely conclude difference between groups) ",
        xlim = c(0, 30),
        ylim = c(0, 1),
        freq = FALSE,
        main = paste("n = ", n, "s = ", s, sep=" "),
        sub = "n is number in each group, for 2n total subjects."
   )
-  hist(big_p_case, 
+  hist(big_p_case,
        freq = FALSE,
-       col = rgb(0.8,0.8,0.8,0.5), 
+       col = rgb(0.8,0.8,0.8,0.5),
        add = TRUE)
-  legend("topright", legend=c(paste(p1, "proteins"), paste(p2, " proteins")), 
-                              cex = 1,  
+  legend("topright", legend=c(paste(p1, "proteins"), paste(p2, " proteins")),
+                              cex = 1,
                               lwd=c(4,4), col=c( rgb(0.1,0.1,0.1,0.5), rgb(0.8,0.8,0.8,0.5)))
 }
 # Apply to various combinations of arguments
@@ -279,7 +279,7 @@ lapply(arg_list, function(args){
 # Create a function that calculates the mean of a count distribution
 mean_dist <- function(n, p, s){
   mean(sig_dist(n, p, s, m = 500))
-} 
+}
 # Plot mean counts as a function of n and p
 n_set <- c(seq(2,30, by = 1), 40)
 p_set <- c(50, 150, 300)
@@ -289,8 +289,8 @@ l3  <- sapply(n_set, mean_dist, p = p_set[3])
 plot(n_set, l1[1:30], type = "l", xlab = "n", ylab = "mean # false positives in 500 sims", ylim = c(0, 35), col = "darkred")
 lines(n_set, l2[1:30], col = "darkblue")
 lines(n_set, l3[1:30], col = "darkgreen")
-legend("topright", legend=c("p (features) = 50", "p = 150", "p = 300"), cex = .5,  
-       lwd=c(4,4, 4), 
+legend("topright", legend=c("p (features) = 50", "p = 150", "p = 300"), cex = .5,
+       lwd=c(4,4, 4),
        col=c("darkblue", "darkblue", "darkgreen"))
 
 # Constrasting with discovery
@@ -303,11 +303,11 @@ get_true_p <- function(p, prop){
     root %>%
     round
 }
-simMVNData <- function(num.vars, num.obs, corr){ 
+simMVNData <- function(num.vars, num.obs, corr){
   cov.mat <- matrix(rep(corr, num.vars^2), ncol = num.vars)
   diag(cov.mat) <- 1
   mvrnorm(num.obs, rep(0, num.vars), Sigma=cov.mat) %>%
-    as.data.frame 
+    as.data.frame
 }
 get_performance <- function(inferred_net, true_net){
   arcs(net) %>%
@@ -380,7 +380,7 @@ sim_covariance_with_constant_partials <- function(net, rho){
     amat %>%
     multiply_by(rho) %>%
     {. + diag(nrow(.)) * (abs(min(eigen(.)$values)) + nrow(.))} %>%
-    solve  
+    solve
 }
 get_edges <- function(net){
   arcs(net) %>%
@@ -410,14 +410,14 @@ big_n <- 200
 rho <- .9
 
 
-# Need to have a way of applying permute edges to the 
+# Need to have a way of applying permute edges to the
 do_sim <- function(m, small_p, big_p, n, rho){
   starting_graph <- signalgraph::power_signal_graph(g, small_p)
   scaled_graph <- signalgraph::power_signal_graph(g, big_p, lucy::reverse_edges(starting_graph)
   net <- starting_graph %>%
     permute_graph %>%
     as_bn %>%
-    moral 
+    moral
   small_data <- sim_covariance_with_constant_partials(net, rho) %>%
     {mvrnorm(small_n, rep(0, small_p), Sigma=.)} %>%
     as.data.frame
@@ -426,7 +426,7 @@ do_sim <- function(m, small_p, big_p, n, rho){
     permute_graph %>%
     as_bn %>%
     moral
-  
+
   gs(undirected = TRUE) %>%
     compare_nets(net)
 }
@@ -439,7 +439,7 @@ small_p <- 20
 big_p <- 100
 tpc_small <- get_true_p(small_p, .4)
 tpc_big <- get_true_p(big_p, .4)
-combos <- list(  
+combos <- list(
   list(p = small_p, n = small_n, true_p_count = tpc_small),
   list(p = small_p, n = big_n, true_p_count =tpc_small),
   list(p = big_p, n = small_n, true_p_count = tpc_small),
